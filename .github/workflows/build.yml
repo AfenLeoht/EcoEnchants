@@ -1,0 +1,36 @@
+name: Build EcoEnchants
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      
+      - name: 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      
+      - name: 赋予 gradlew 执行权限
+        run: chmod +x gradlew
+      
+      - name: 编译 EcoEnchants
+        run: ./gradlew build --no-daemon
+      
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: EcoEnchants-Build
+          path: |
+            eco-enchants-plugin/build/libs/*.jar
+            !**/*-dev.jar
+            !**/*-sources.jar
